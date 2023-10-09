@@ -7,11 +7,11 @@ jobs:
     - name: Exec ls
       run: |
         ls
-        cd /home/runner/work/projet_fil_rouge/projet_fil_rouge/
+
     - name: Exec python PE
       env:
         API_KEY: ${{ secrets.API_KEY }}
       run: |
-        ls
+        cd /home/runner/work/projet_fil_rouge/projet_fil_rouge/
         python3 PE.py
 
