@@ -7,5 +7,10 @@ jobs:
     - name: Exec python PE
       run: |
         ls
+    - name: Exec python PE
+      env:
+        API_KEY: ${{ secrets.API_KEY }}
+      run: |
+        ls
         python3 PE.py
 
