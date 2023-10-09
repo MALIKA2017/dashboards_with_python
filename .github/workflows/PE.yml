@@ -8,6 +8,6 @@ jobs:
       env:
         API_KEY: ${{ secrets.API_KEY }}
       run: |
-          ls
-          python3 PE.py
+        ls
+        python3 PE.py
 
