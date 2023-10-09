@@ -4,7 +4,7 @@ jobs:
   run-shell-command:
     runs-on: ubuntu-latest
     steps:
-    - name: Exec python PE
+    - name: Exec ls
       run: |
         ls
     - name: Exec python PE
