@@ -1,5 +1,6 @@
-# Webscraping du site de pôle emploi
-
+##################################################
+###     Webscraping du site de pôle emploi     ###
+##################################################
 import os 
 import requests
 from pprint import pprint
@@ -7,7 +8,8 @@ from pprint import pprint
 ID_CLIENT= "PAR_datascientest_98cd282e8a1a1386298c211358d8af06dfa5ab10edb133a40c513453375fcabb"
 KEY= "37a59304f2c51b9cf9009fa731771b578468964e70c10d4782e1a9ae852f7b24"
 REALM= "Datascientest"
-
+API_KEY = os.environ.get("API_KEY")
+print(API_KEY)
 # URL de point d'accès
 url_token = "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=%2Fpartenaire"
 # En-tête de la requête du point d'accès
@@ -27,20 +29,18 @@ rep_token = r_token.json()
 pprint(rep_token)
 
 access_token_bearer = rep_token["access_token"]
-print(access_token_bearer)
 # URL de la requête
-url_req = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search?qualification=9&motsCles=Data+Engineer"
+url_req = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search?"
 #Autorisation de rêquete
-authorization = {"Authorization": access_token_bearer}
+authorization = {"Authorization": f"Bearer {access_token_bearer}"}
 # Paramètres de la requête
 params = {
     "qualification": "0",  # Niveau de qualification demandé
     "motsCles": "informatique",  # Recherche par mot clé
-    "commune": "51069,76322,46083,12172,28117",  # Exemple de codes INSEE de communes
-    "origineOffre": "2",  # Partenaire
+    "commune": "67482",  # Exemple de codes INSEE de communes
 }
 # Effectuer la requête POST
-r_req = requests.get(url_token, params=params, headers=authorization)
+r_req = requests.get(url_req, params=params, headers=authorization)
 
 
 #data = r.json()
