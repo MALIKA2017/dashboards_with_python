@@ -1,0 +1,12 @@
+name: Extraction PE
+on: [push]
+jobs:
+  run-shell-command:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Exec python PE
+         env:
+          API_KEY: ${{ secrets.API_KEY }}
+         run: |
+          python3 PE.py
+
