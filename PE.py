@@ -40,12 +40,12 @@ params = {
     "motsCles": "informatique",  # Recherche par mot clé
     "commune": "67482",  # Exemple de codes INSEE de communes
 }
-# Effectuer la requête POST
+# Effectuer la requête GET
 r_req = requests.get(url_req, params=params, headers=authorization)
 
 
-#data = r.json()
-
+data = r_req.json()
 print(r_req )
 #pprint(r_req.json())
+
 
