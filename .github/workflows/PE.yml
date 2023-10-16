@@ -6,7 +6,7 @@ jobs:
     steps:
     - name: Exec ls
       run: |
-        ls -l
+        echo ls -l
         cd /home/runner/work/projet_fil_rouge/
         python3 PE.py
         dir
