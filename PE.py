@@ -7,10 +7,10 @@ from pprint import pprint
 
 ID_CLIENT= "PAR_datascientest_98cd282e8a1a1386298c211358d8af06dfa5ab10edb133a40c513453375fcabb"
 KEY= "37a59304f2c51b9cf9009fa731771b578468964e70c10d4782e1a9ae852f7b24"
-REALM= "Datascientest"
-API_KEY = os.environ.get("API_KEY")
 
-print(f"API_KEY : {API_KEY}")
+#récupération de la clé github ?
+API_KEY = os.environ.get("API_KEY")
+print("***********", API_KEY, "*****************")
 # URL de point d'accès
 url_token = "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=%2Fpartenaire"
 # En-tête de la requête du point d'accès
