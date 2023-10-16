@@ -11,9 +11,12 @@ jobs:
       uses: actions/setup-python@v2
       with:
           python-version: 3.x
+    - name: Install Python libraries
+      run: |
+        pip install pandas==1.5.3 requests
     - name: Exec python PE
       env:
          API_KEY: ${{ secrets.API_KEY }}
       run: |
-        PE.py
+        python PE.py
 
