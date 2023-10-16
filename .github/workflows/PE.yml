@@ -11,9 +11,9 @@ jobs:
       uses: actions/setup-python@v2
       with:
           python-version: 3.x
-    - name: List directory contents
+    - name: Install Python libraries
       run: |
-        ls
+        pip install requests
     - name: Exec python PE
       env:
          API_KEY: ${{ secrets.API_KEY }}
