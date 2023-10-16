@@ -8,6 +8,7 @@ jobs:
       run: |
         ls
         cd /home/runner/work/projet_fil_rouge/
+        python3 PE.py
         dir
         cd /home/runner/work/projet_fil_rouge/projet_fil_rouge/
         dir
