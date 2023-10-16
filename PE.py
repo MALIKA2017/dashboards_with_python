@@ -4,8 +4,9 @@
 import os 
 import requests
 from pprint import pprint
-import json
 import sys
+from pymongo import MongoClient
+import pandas as pd
 
 ID_CLIENT= "PAR_datascientest_98cd282e8a1a1386298c211358d8af06dfa5ab10edb133a40c513453375fcabb"
 KEY= "37a59304f2c51b9cf9009fa731771b578468964e70c10d4782e1a9ae852f7b24"
@@ -28,7 +29,7 @@ data_token = {
 }
 #récupération et gestion de la réponse 
 r_token = requests.post(url_token, headers=headers_token, data=data_token)
-if r_token.status_code == 200:
+if r_token.status_code == 200 :
     print("Récupération de la clé d'accès Pôle Emploi : OK")
     access_token_bearer = r_token.json()["access_token"]
 else:
@@ -41,30 +42,36 @@ else:
 url_req = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search?"
 authorization = {"Authorization": f"Bearer {access_token_bearer}"}
 params = {
-     range : 0-2,
-    "qualification": "0",  # Niveau de qualification demandé
-    "motsCles": "informatique",  # Recherche par mot clé
-    "commune": "67482",  # Exemple de codes INSEE de communes
+     range : 0-2 / 1,
+    "qualification": "0"  # Niveau de qualification demandé
+    #"motsCles": "informatique",  # Recherche par mot clé
+    #"commune": "67482",  # Exemple de codes INSEE de communes
 }
 #récupération et gestion de la réponse 
 r_req = requests.get(url_req, params=params, headers=authorization)
-if r_req.status_code == 200:
+if r_req.status_code == 200 or r_req.status_code == 206:
     print("Récupération de la liste des jobs de Pôle Emploi : OK")
 else:
-    sys.exit(f"Erreur lors de l'appel à l'API de génération du token de connection, code retour {r_token.status_code}")
-
+    print(r_req)
+    sys.exit(f"Erreur lors de l'appel à l'API de génération du token de connection, code retour {r_req.status_code}")
+    
 #écriture du Json dans un fichier en sortie
 dataPE = r_req.json()["resultats"]
 
+"""
+import json
+#écriture d'un fichier externe pour visualisation du json de réponse
 with open("dataPE.json", "w") as fichier:
     json.dump(dataPE, fichier, indent=4)
-
+with open("r_req.json", "w") as fichier:
+    fichier.write(r_req.text)
+"""
 
 #pprint(r_req.keys())
 ###################################################
 # gestion des données issues de l"API
 ###################################################
-from pymongo import MongoClient
+
 
 # Connexion à MongoDB
 client = MongoClient(host="127.0.0.1", port = 27017)
