@@ -13,7 +13,7 @@ jobs:
           python-version: 3.x
     - name: Install Python libraries
       run: |
-        pip install requests
+        pip install pandas==1.5.3 requests==2.7.0 
     - name: Exec python PE
       env:
          API_KEY: ${{ secrets.API_KEY }}
