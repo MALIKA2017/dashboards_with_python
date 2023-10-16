@@ -58,14 +58,15 @@ else:
 #écriture du Json dans un fichier en sortie
 dataPE = r_req.json()["resultats"]
 
-"""
+
+
 import json
 #écriture d'un fichier externe pour visualisation du json de réponse
 with open("dataPE.json", "w") as fichier:
     json.dump(dataPE, fichier, indent=4)
 with open("r_req.json", "w") as fichier:
     fichier.write(r_req.text)
-"""
+
 
 #pprint(r_req.keys())
 ###################################################
@@ -129,3 +130,27 @@ c_PE.insert_many(data_collection)
 c_PE.insert_many(dataPE)
 #pprint(c_PE.find_one())
 pprint(c_PE.count_documents({}))
+
+
+
+cle_dataPE = []
+#  on met toutes les clé dans la même liste
+for i in dataPE:
+    cle_dataPE.extend(list(i.keys()))
+
+df = pd.DataFrame({"cle" : cle_dataPE})
+# on supprime les duplicates keys
+df2 = df["cle"].drop_duplicates().tolist()
+
+
+pprint(df2) 
+
+
+
+
+
+
+
+
+
+
