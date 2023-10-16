@@ -4,15 +4,16 @@ jobs:
   run-shell-command:
     runs-on: ubuntu-latest
     steps:
-     - name: Set up Python
-       uses: actions/setup-python@master
-       with:
-         python-version: "3.x"
-     - name: Exec python PE
-       env:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+          python-version: 3.x
+    - name: Exec python PE
+      env:
          API_KEY: ${{ secrets.API_KEY }}
-       run: |
-        echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
-        cd ${GITHUB_WORKSPACE}
+      run: |
         PE.py
 
