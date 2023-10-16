@@ -7,9 +7,10 @@ jobs:
     - name: Exec ls
       run: |
         ls
+        cd /home/runner/work/projet_fil_rouge/
+        dir
         cd /home/runner/work/projet_fil_rouge/projet_fil_rouge/
-    - name: Exec ls2
-      run: |
+        dir
         ls
     - name: Exec python PE
       env:
