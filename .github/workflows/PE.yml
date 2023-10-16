@@ -14,5 +14,5 @@ jobs:
        run: |
         echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
         cd ${GITHUB_WORKSPACE}
-        python3 PE.py
+        PE.py
 
