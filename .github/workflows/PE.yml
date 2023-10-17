@@ -8,7 +8,7 @@ jobs:
         image: mongo:5.0
         ports:
           - 27017:27017
-        options: --name my_mongo -v $(pwd)/sample_training:/data/db
+        options: --name my_mongo -v /home/user/projet/sample_training:/data/db
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
