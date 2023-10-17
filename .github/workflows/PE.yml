@@ -3,19 +3,25 @@ on: [push]
 jobs:
   run-shell-command:
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:5.0
+        ports:
+          - 27017:27017
+        options: --name my_mongo -v /home/user/projet/sample_training:/data/db
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Python
+    - name: Set up Python 
       uses: actions/setup-python@v2
       with:
           python-version: 3.x
     - name: Install Python libraries
       run: |
-        pip3 install pandas==1.5.3 requests
+        pip3 install pandas==1.5.3 requests pymongo
     - name: Exec python PE
       env:
-         API_KEY: ${{ secrets.API_PE_KEY }}
+         API_PE_KEY: ${{ secrets.API_PE_KEY }}
       run: |
-         API_PE_KEY=${{ secrets.API_PE_KEY}} python3 PE.py
+         python3 PE.py
