@@ -13,7 +13,7 @@ ID_CLIENT= "PAR_datascientest_98cd282e8a1a1386298c211358d8af06dfa5ab10edb133a40c
 KEY= "37a59304f2c51b9cf9009fa731771b578468964e70c10d4782e1a9ae852f7b24"
 
 #récupération de la clé github ?
-API_KEY = os.environ.get("API_PE_KEY")
+API_KEY = os.environ.get('API_PE_KEY')
 print("***********", API_KEY, "*****************")
 if KEY == API_KEY:
     print("OK !!!!!")
