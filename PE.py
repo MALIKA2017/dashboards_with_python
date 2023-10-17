@@ -15,7 +15,10 @@ KEY= "37a59304f2c51b9cf9009fa731771b578468964e70c10d4782e1a9ae852f7b24"
 #récupération de la clé github ?
 API_KEY = os.environ.get("API_PE_KEY")
 print("***********", API_KEY, "*****************")
-
+if KEY == API_KEY:
+    print("OK !!!!!")
+else:
+    print("KO :( :(")
 #############################################################
 # Appel de l'API de génération du Token
 #############################################################
