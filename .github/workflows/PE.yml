@@ -24,4 +24,4 @@ jobs:
       env:
          API_PE_KEY: ${{ secrets.API_PE_KEY }}
       run: |
-         API_PE_KEY=${{ secrets.API_PE_KEY}} python3 PE.py
+         python3 PE.py
