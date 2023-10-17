@@ -19,7 +19,7 @@ jobs:
           python-version: 3.x
     - name: Install Python libraries
       run: |
-        pip3 install pandas==1.5.3 requests pymongo os
+        pip3 install pandas==1.5.3 requests pymongo
     - name: Exec python PE
       env:
          API_PE_KEY: ${{ secrets.API_PE_KEY }}
