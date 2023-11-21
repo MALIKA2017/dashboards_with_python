@@ -6,6 +6,8 @@ from pprint import pprint
 from pymongo import MongoClient
 import pandas as pd
 #import json
+from PE_extraction import dataPE
+
 
 #---------------------------------------------------
 # gestion des données issues de l"API
