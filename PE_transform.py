@@ -5,12 +5,20 @@ from pprint import pprint
 #import sys
 from pymongo import MongoClient
 import pandas as pd
-#import json
-from PE_extraction import dataPE
-
+import json
+#from PE_extraction import dataPE
 
 #---------------------------------------------------
-# gestion des données issues de l"API
+# récupération des données de l'API
+#---------------------------------------------------
+with open("dataPE.json", "r") as file:
+    # Charger le contenu du fichier JSON
+    dataPE_content = file.read()
+    # Charger le JSON en tant que liste d'objets
+    dataPE_list = json.loads(dataPE_content)
+
+#---------------------------------------------------
+# création de la base NoSQL
 #---------------------------------------------------
 
 # Connexion à MongoDB
@@ -20,43 +28,47 @@ client = MongoClient(host="127.0.0.1", port = 27017)
 DB = client["DB_job"]
 #Création et initialisation de la collection
 c_PE = DB["PE"]
+# RAZ de la collection
 c_PE.drop()
 
 
-#alimentation de la collection c_PE de la DB
+#---------------------------------------------------
+# alimentation de la base NoSQL
+#---------------------------------------------------
+
 data_collection = []
-for doc in dataPE:
+for job in dataPE_list:
     data_doc = {
-    "accessibleTH": doc.get("accessibleTH"),
-    "alternance": doc.get("alternance"),
-    "appellationlibelle": doc.get("appellationlibelle"),
-    "codeNAF": doc.get("codeNAF"),
-    "competences": doc.get("competences"),
-    "contact": doc.get("contact"),
-    "dateActualisation": doc.get("dateActualisation"),
-    "dateCreation": doc.get("dateCreation"),
-    "deplacementCode": doc.get("deplacementCode"),
-    "deplacementLibelle": doc.get("deplacementLibelle"),
-    "description": doc.get("description"),
-    "dureeTravailLibelle": doc.get("dureeTravailLibelle"),
-    "dureeTravailLibelleConverti": doc.get("dureeTravailLibelleConverti"),
-    "entreprise": doc.get("entreprise"),
-    "experienceExige": doc.get("experienceExige"),
-    "experienceLibelle": doc.get("experienceLibelle"),
-    "formations": doc.get("formations"),
-    "id": doc.get("id"),
-    "intitule": doc.get("intitule"),
-    "lieuTravail": doc.get("lieuTravail"),
-    "natureContrat": doc.get("natureContrat"),
-    "qualificationCode": doc.get("qualificationCode"),
-    "qualificationLibelle": doc.get("qualificationLibelle"),
-    "romeCode": doc.get("romeCode"),
-    "romeLibelle": doc.get("romeLibelle"),
-    "salaire": doc.get("salaire"),
-    "secteurActivite": doc.get("secteurActivite"),
-    "secteurActiviteLibelle": doc.get("secteurActiviteLibelle"),
-    "typeContrat": doc.get("typeContrat"),
-    "typeContratLibelle": doc.get("typeContratLibelle")
+    "accessibleTH": job.get("accessibleTH"),
+    "alternance": job.get("alternance"),
+    "appellationlibelle": job.get("appellationlibelle"),
+    "codeNAF": job.get("codeNAF"),
+    "competences": job.get("competences"),
+    "contact": job.get("contact"),
+    "dateActualisation": job.get("dateActualisation"),
+    "dateCreation": job.get("dateCreation"),
+    "deplacementCode": job.get("deplacementCode"),
+    "deplacementLibelle": job.get("deplacementLibelle"),
+    "description": job.get("description"),
+    "dureeTravailLibelle": job.get("dureeTravailLibelle"),
+    "dureeTravailLibelleConverti": job.get("dureeTravailLibelleConverti"),
+    "entreprise": job.get("entreprise"),
+    "experienceExige": job.get("experienceExige"),
+    "experienceLibelle": job.get("experienceLibelle"),
+    "formations": job.get("formations"),
+    "id": job.get("id"),
+    "intitule": job.get("intitule"),
+    "lieuTravail": job.get("lieuTravail"),
+    "natureContrat": job.get("natureContrat"),
+    "qualificationCode": job.get("qualificationCode"),
+    "qualificationLibelle": job.get("qualificationLibelle"),
+    "romeCode": job.get("romeCode"),
+    "romeLibelle": job.get("romeLibelle"),
+    "salaire": job.get("salaire"),
+    "secteurActivite": job.get("secteurActivite"),
+    "secteurActiviteLibelle": job.get("secteurActiviteLibelle"),
+    "typeContrat": job.get("typeContrat"),
+    "typeContratLibelle": job.get("typeContratLibelle")
     }
     data_collection.append(data_doc)      
 
@@ -78,13 +90,3 @@ df = pd.DataFrame({"cle" : cle_dataPE})
 # on supprime les duplicates keys
 df2 = df["cle"].drop_duplicates().tolist()
 pprint(df2) 
-
-
-
-
-
-
-
-
-
-
