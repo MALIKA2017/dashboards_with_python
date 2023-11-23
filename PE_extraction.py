@@ -5,10 +5,13 @@ import os
 import requests
 import sys
 import json
+import time
 
+# Enregistrez le temps de début
+debut = time.time()
 
-ID_CLIENT= "PAR_datascientest_98cd282e8a1a1386298c211358d8af06dfa5ab10edb133a40c513453375fcabb"
-KEY= "37a59304f2c51b9cf9009fa731771b578468964e70c10d4782e1a9ae852f7b24"
+ID_CLIENT= "PAR_datascientest_ecb3199f02af61edf17ee4429b67e79583f6f1d191aebfe00193fa013db7c694"
+KEY= "4b7d5baaa1c96b56425ddc2ae0bb0c325306465543fc3cdfa967d40a9c9164f7"
 
 #récupération de la clé github ?
 API_KEY = os.environ.get('API_PE_KEY')
@@ -33,7 +36,7 @@ if r_token.status_code == 200 :
     print("Récupération de la clé d'accès Pôle Emploi : OK")
     access_token_bearer = r_token.json()["access_token"]
 else:
-    sys.exit(f"Erreur lors de l'appel à l'API de génération du token de connection, code retour {r_token.status_code}")
+    sys.exit(f"Erreur lors de l'appel à l'API de génération du token de connection, code retour {r_token.status_code}, erreur : {r_token.json().get('error')}")
 
 #############################################################
 # Appel de l'API de récupération des jobs Pôle Emploi
@@ -135,4 +138,4 @@ print("len(dataPE) 5 ",len(dataPE))
 print_csv("w")
 
 
-
+print(f"temps d'exécution {round(time.time()-debut ,2)}")
