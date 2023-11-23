@@ -46,13 +46,13 @@ authorization = {"Authorization": f"Bearer {access_token_bearer}"}
 params = {
     "range" : "0-149",
     "qualification": 0,  # Niveau de qualification demandé
-    "typeContrat":"CDI,CDD",
+    "typeContrat":"CDI",
     "tempsPlein" : "true", #"true"/"false"
-    "origineOffre":1    #"1 : Pole emploi ; 2 : Partenaires
+    "origineOffre":1,    #"1 : Pole emploi ; 2 : Partenaires
+    "departement":67
     #"motsCles": "informatique",  # Recherche par mot clé
     #"commune": "67482",  # Exemple de codes INSEE de communes
 
-    #"tempsPlein" : "true" #"true"/"false"
     #"distance" : 10 # rayon en km; 0 pour spécifier uniquement les offres de la ville
 }
 
@@ -68,24 +68,29 @@ def appel_API():
     r_req = requests.get(url_req, params=params, headers=authorization)
     return r_req
 
-def gestion_rc(return_code, seq_appel):
+def gestion_rc(reponse, seq_appel, params):
     #gestion des codes retour
-    if return_code == 200 :
+    if reponse.status_code == 200 :
         print("Récupération de la liste des jobs : OK")
-    elif return_code == 206:
+    elif reponse.status_code == 206:
         if seq_appel == 20:
             print("Récupération partielle de la liste des jobs : plus de 3000 jobs !")
         else:
             return True
-    elif return_code == 204 :
+    elif reponse.status_code == 204 :
         if seq_appel == 1:
-            sys.exit("Aucun résultat trouvé pour les critères de sélection !")
+            print("Aucun résultat trouvé pour les critères de sélection !")
+            return False
         else:
             print("Récupération de la liste des jobs : OK")
             return False
+    elif reponse.status_code == 400 :
+        print(f"Aucun résultat trouvé pour les paramètres suivantes : \n {params} - {reponse.json()['message']}")
+        return False
     else:
+        print(f"paramètre en d'appel : {params}")
         print(f"Séquence d'appel n°{seq_appel}")    
-        sys.exit(f"Erreur lors de l'appel à l'API de récupération des jobs, code retour {return_code}")
+        sys.exit(f"Erreur lors de l'appel à l'API de récupération des jobs, code retour {reponse.status_code} - {reponse.json()['message']}")
     
 
 def print_csv(type_écriture:str):
@@ -101,31 +106,33 @@ def print_csv(type_écriture:str):
 
 dataPE = []
 #récupération des réponses des annonces Pôle emploi ainsi que des fournisseurs autres
+for qualification in [0,9]:
+    params.update({"qualification": qualification})
+    for type_contrat in ["CDI", "CDD"]:
+        params.update({"typeContrat": type_contrat})
+        for departement in [f"{i:02d}" for i in range(1,96)]:
+            params.update({"departement": departement})
+            for origine_offre in [1,2]:
+                params.update({"range" : "0-149", "origineOffre": origine_offre})
+                print("len(dataPE) 0 ",len(dataPE))
+                print(params)
+                seq_appel = 1 
+                r_req = appel_API()
+                if gestion_rc(r_req, seq_appel, params):
+                    for offre in r_req.json()["resultats"]:
+                        dataPE.append(offre)
+                # -- on boucle si on n'a pas récupéré toutes les réponses lors du 1er appel  -- limitation technique fixée à 19 séquence d'appel par l'API
+                while r_req.status_code == 206 and seq_appel < 20:
+                    seq_appel += 1 
+                    maj_param_appel()
+                    r_req = appel_API()
+                    if gestion_rc(r_req, seq_appel, params):
+                        for offre in r_req.json()["resultats"]:
+                            dataPE.append(offre)
 
-for i in range(2):
-    seq_appel = 1 
-
-    r_req = appel_API()
-    gestion_rc(r_req.status_code, seq_appel)
-    dataPE = dataPE + r_req.json()["resultats"]
-    # -- on boucle si on n'a pas récupéré toutes les réponses lors du 1er appel  -- limitation technique fixée à 19 séquence d'appel par l'API
-    while r_req.status_code == 206 and seq_appel < 20:
-        seq_appel += 1 
-        maj_param_appel()
-        r_req = appel_API()
-        if gestion_rc(r_req.status_code, seq_appel):
-            dataPE = dataPE + r_req.json()["resultats"]
-
-    #écriture d'un fichier externe pour visualisation du json de réponse
-    if i == 0 :
-        print_csv("w")
-    else:
-        print_csv("a")
-
-    # initialisation du 2nd appel - job autres fournisseurs
-    params.update({"range" : "0-149", "origineOffre": 2})
-    seq_appel = 1 
-
+#écriture d'un fichier externe pour visualisation du json de réponse
+print("len(dataPE) 5 ",len(dataPE))
+print_csv("w")
 
 
 
