@@ -5,8 +5,16 @@ from pprint import pprint
 #import sys
 from pymongo import MongoClient
 import pandas as pd
+import numpy as np
 import json
 #from PE_extraction import dataPE
+import time
+
+
+# on supprime la limite de l'affichage de l'ouput car on a beaucoup de colonne !
+pd.set_option('display.max_rows', None)
+# Enregistrez le temps de début
+debut = time.time()
 
 #---------------------------------------------------
 # récupération des données de l'API
@@ -31,14 +39,14 @@ for job in dataPE_list:
     "alternance": job.get("alternance", ""),
     "appellationlibelle": job.get("appellationlibelle", ""),
     "codeNAF": job.get("codeNAF", ""),
-    "competences_nb" : len(job.get("competences", "0")),
+    "competences_nb" : len(job.get("competences", "")),
     #competences : mise à plat Cf ci-dessous
-    "contact": job.get("contact", ""),
     "dateActualisation": job.get("dateActualisation", ""),
     "dateCreation": job.get("dateCreation", ""),
-    "deplacementCode": job.get("deplacementCode", ""),
+    "deplacementCode": job.get("deplacementCode", 1),   #intialisation à 1 : jamais de déplacement
     "deplacementLibelle": job.get("deplacementLibelle", ""),
     "description": job.get("description", ""),
+    
     "dureeTravailLibelle": job.get("dureeTravailLibelle", ""),
     "dureeTravailLibelleConverti": job.get("dureeTravailLibelleConverti", ""),
     "entreprise_nom": job.get("entreprise").get("nom", ""),
@@ -48,10 +56,10 @@ for job in dataPE_list:
     "entreprise_adaptee": job.get("entreprise").get("entrepriseAdaptee", ""),
     "experienceExige": job.get("experienceExige", ""),
     "experienceLibelle": job.get("experienceLibelle", ""),
-    "formations": job.get("formations", ""),
+    #"formations": job.get("formations", ""),       faible taux de complétion
     "id": job.get("id", ""),
     "intitule": job.get("intitule", ""),
-    "langues_nb" : len(job.get("langues", "0")),
+    "langues_nb" : len(job.get("langues", "")),
     #langues : mise à plat cf ci-dessous
     "lieuTravail_libelle": job.get("lieuTravail").get("libelle", ""),
     "lieuTravail_latitude": job.get("lieuTravail").get("latitude", ""),
@@ -61,7 +69,7 @@ for job in dataPE_list:
     "natureContrat": job.get("natureContrat", ""),
     "origineOffre": job.get("origineOffre").get("origine", ""),
     "outilsBureautiques": job.get("outilsBureautiques", ""),    
-    "permis_nb" : len(job.get("permis", "0")),
+    "permis_nb" : len(job.get("permis", "")),
     #permis : mise à plat Cf ci-dessous
     "qualificationCode": job.get("qualificationCode", ""),
     "qualificationLibelle": job.get("qualificationLibelle", ""),
@@ -95,9 +103,9 @@ for job in dataPE_list:
 
     if job.get("competences") != None:
         for i, comp in enumerate(job.get("competences")):
-                dict1= {f"competences_code{i+1}" : f"{comp.get('code', '')}"}
-                dict2 = {f"competences_libelle{i+1}" : f"{comp.get('libelle', '')}"}
-                dict3 = {f"competences_exigence{i+1}" : f"{comp.get('exigence', '')}"}
+                dict1= {f"competences{i+1:02d}_code" : f'{comp.get("code", "")}'}
+                dict2 = {f"competences{i+1:02d}_libelle" : f'{comp.get("libelle", "")}'}
+                dict3 = {f"competences{i+1:02d}_exigence" : f'{comp.get("exigence", "")}'}
                 data_doc.update(dict1)
                 data_doc.update(dict2)
                 data_doc.update(dict3)
@@ -105,27 +113,72 @@ for job in dataPE_list:
 
     if job.get("qualitesProfessionnelles") != None:
         for i, qualite in enumerate(job.get("qualitesProfessionnelles")):
-                dict1= {f"qualitesProfessionnelles{i+1}" : f"{comp.get('libelle', '')}"}
-                dict2 = {f"qualitesProfessionnelles-{i+1}" : f"{comp.get('description', '')}"}
+                dict1= {f"qualitesProfessionnelles{i+1}_libelle" : f"{comp.get('libelle', '')}"}
+                dict2 = {f"qualitesProfessionnelles{i+1}_description" : f"{comp.get('description', '')}"}
                 data_doc.update(dict1)
                 data_doc.update(dict2)
 
     data_aplat.append(data_doc)
 
 df = pd.DataFrame(data_aplat)
-df.columns = sorted(df.columns)
-df.to_csv("df.csv", index=False)
+df= df[sorted(df.columns)]
+#df.to_csv("df.csv", index=False)
+
 #---------------------------------------------------
 # Transformation des données
 #---------------------------------------------------
+#print(df.head())
 
-#transformation des Nan en 
-#print(df.columns[df.isna().any()][60:])
+#transformation des Nan en "" => il n'existe que sur les 3 rubriques qu'on a aplanit au dessus
+df = df.replace(np.nan, "")
+#print(df.isnull().sum(axis = 0) )
+
+# Suppression des doublons
+df = df.drop_duplicates()
+#print(df.duplicated().sum())
+
+#remplissage "accessibleTH" par son mode (false)
+df["accessibleTH"] = df["accessibleTH"].replace("", df["accessibleTH"].mode()[0])
+
+#extraction de la durée horaire du libellé et transformation au format numérique 38H30 ==> 38.5
+df["dureeTravailLibelle"] = df["dureeTravailLibelle"].apply(lambda x : x[:2]+"."+ (str(round(int(x.replace(" ", "")[3:5])/60*100 ,2)) if x.replace(" ", "")[3:4].isnumeric() else "00"))
+
+#extraction de la durée d'expérience souhaitée en années en fonction du formatage présent
+
+"""for x, libelle in enumerate(df["experienceLibelle"]):
+    annee_trouvee = False
+    #recherche du nombre d'année dans le libellé et on s'arrête à la première occurence (les autres ne sont que complémentaires)
+    for y, part in enumerate(libelle.split()):
+        if part[:2].lower() == "an":
+            df.loc[x,"experienceLibelle"] = libelle.split()[y-1] 
+            annee_trouvee = True
+            break
+        elif part[:4].lower() == "mois":
+            df.loc[x,"experienceLibelle"] = round(int(libelle.split()[y-1])/12 ,2)  if libelle.split()[y-1].isdigit() else "****"
+            annee_trouvee = True
+            break
+
+    #initialisation de rubrique dans le cas générique où on ne trouverait pas d'année dans le libellé
+    if not annee_trouvee:
+        if libelle.split()[0] == "Débutant" :
+            df.loc[x,"experienceLibelle"] = 0
+        elif libelle.split()[0] == "Expérience":
+            df.loc[x,"experienceLibelle"]= 3
+        else:
+            df.loc[x,"experienceLibelle"] = 0
+
+    #if libelle.split()[x-1].isdigit() else 0
+        
+"""
 
 
+df["experienceLibelle"] = df["experienceLibelle"].apply(lambda x : str(round(int(x.split(" ")[0])/12 ,2)) + " ans" if x.split(" ")[1] == "mois" else x)
+df["experienceLibelle"] = df["experienceLibelle"].apply(lambda x : (x.split(" ")[0] + " ans" if (x.split(" ")[1] == "an" or x.split(" ")[1] =="ans") else x))
+df["experienceLibelle"] = df["experienceLibelle"].apply(lambda x : "0 ans" if x.split(" ")[0] == "Débutant" else x)
+df["experienceLibelle"] = df["experienceLibelle"].apply(lambda x : "0 ans" if x.split(" ")[0] == "Expérience" else x)
 
-
-
+print(df["experienceLibelle"].head(100))
+df.to_csv("df.csv", index=False)
 """
 from statistics import median,mean
 import numpy as np
@@ -177,3 +230,9 @@ df = pd.DataFrame({"cle" : cle_dataPE})
 df2 = df["cle"].drop_duplicates().tolist()
 pprint(df2) 
 """
+
+
+
+
+
+print(f"temps d'exécution {round(time.time()-debut ,2)}")
