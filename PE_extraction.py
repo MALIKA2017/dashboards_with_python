@@ -44,7 +44,7 @@ seq_appel = 0
 url_req = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search?"
 authorization = {"Authorization": f"Bearer {access_token_bearer}"}
 params = {
-    "range" : "0-1",
+    "range" : "0-149",
     "qualification": 0,  # Niveau de qualification demandé
     "typeContrat":"CDI",
     "tempsPlein" : "true", #"true"/"false"
