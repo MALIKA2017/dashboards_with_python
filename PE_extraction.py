@@ -7,6 +7,7 @@ import sys
 import json
 
 
+
 ID_CLIENT= "PAR_datascientest_98cd282e8a1a1386298c211358d8af06dfa5ab10edb133a40c513453375fcabb"
 KEY= "37a59304f2c51b9cf9009fa731771b578468964e70c10d4782e1a9ae852f7b24"
 
@@ -44,9 +45,9 @@ seq_appel = 0
 url_req = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search?"
 authorization = {"Authorization": f"Bearer {access_token_bearer}"}
 params = {
-    "range" : "0-1",
+    "range" : "0-149",
     "qualification": 0,  # Niveau de qualification demandé
-    "typeContrat":"CDI",
+    "typeContrat":"CDI,CDD",
     "tempsPlein" : "true", #"true"/"false"
     "origineOffre":1,    #"1 : Pole emploi ; 2 : Partenaires
     "departement":67
@@ -68,29 +69,24 @@ def appel_API():
     r_req = requests.get(url_req, params=params, headers=authorization)
     return r_req
 
-def gestion_rc(reponse, seq_appel, params):
+def gestion_rc(return_code, seq_appel):
     #gestion des codes retour
-    if reponse.status_code == 200 :
+    if return_code == 200 :
         print("Récupération de la liste des jobs : OK")
-    elif reponse.status_code == 206:
+    elif return_code == 206:
         if seq_appel == 20:
             print("Récupération partielle de la liste des jobs : plus de 3000 jobs !")
         else:
             return True
-    elif reponse.status_code == 204 :
+    elif return_code == 204 :
         if seq_appel == 1:
-            print("Aucun résultat trouvé pour les critères de sélection !")
-            return False
+            sys.exit("Aucun résultat trouvé pour les critères de sélection !")
         else:
             print("Récupération de la liste des jobs : OK")
             return False
-    elif reponse.status_code == 400 :
-        print(f"Aucun résultat trouvé pour les paramètres suivantes : \n {params} - {reponse.json()['message']}")
-        return False
     else:
-        print(f"paramètre en d'appel : {params}")
         print(f"Séquence d'appel n°{seq_appel}")    
-        sys.exit(f"Erreur lors de l'appel à l'API de récupération des jobs, code retour {reponse.status_code} - {reponse.json()['message']}")
+        sys.exit(f"Erreur lors de l'appel à l'API de récupération des jobs, code retour {return_code}")
     
 
 def print_csv(type_écriture:str):
