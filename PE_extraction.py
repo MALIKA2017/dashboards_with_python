@@ -18,7 +18,8 @@ ID_CLIENT= "PAR_datascientest_9c4305730c9067f9fe8e0405213db22bb178ca83c2b00b893b
 KEY= "9979a819e45b5c3711e2d84537abedd09685773feb2193731ba13a5a4159a236"
 
 #récupération de la clé github ?
-API_KEY = os.environ.get('API_PE_KEY')
+API_KEY = os.environ.get('api_key')
+print("os.environ", os.environ)
 print("***********", API_KEY, "*****************")
 
 # Paramètre du point d"accès (URL, entête et token)
