@@ -14,8 +14,6 @@ debut = time.time()
 # Appel de l'API de génération du Token
 #############################################################
 
-
-
 #récupération de la clé github ?
 API_KEY = os.environ.get('api_key')
 API_ID_CLIENT = os.environ.get('api_id_client')
