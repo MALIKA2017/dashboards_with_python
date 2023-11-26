@@ -23,5 +23,6 @@ jobs:
     - name: Exec python PE
       env:
          api_key: ${{ secrets.API_PE_KEY }}
+         api_id_client: ${{ secrets.API_PE_CLIENT }}
       run: |
         python3 PE_extraction.py
