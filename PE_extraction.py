@@ -14,18 +14,21 @@ debut = time.time()
 # Appel de l'API de génération du Token
 #############################################################
 
+
+
 #récupération de la clé github ?
 API_KEY = os.environ.get('api_key')
-print("os.environ", os.environ)
+API_ID_CLIENT = os.environ.get('api_id_client')
 print("***********", API_KEY, "*****************")
+print("***********", API_ID_CLIENT, "*****************")
 
 # Paramètre du point d"accès (URL, entête et token)
 url_token = "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=%2Fpartenaire"
 headers_token = { "Content-Type": "application/x-www-form-urlencoded"}
 data_token = {
     "grant_type": "client_credentials"
-   , "client_id": "PAR_datascientest_9c4305730c9067f9fe8e0405213db22bb178ca83c2b00b893b273ba1e8077b84"
-   , "client_secret": "9979a819e45b5c3711e2d84537abedd09685773feb2193731ba13a5a4159a236"
+   , "client_id": API_ID_CLIENT
+   , "client_secret": API_KEY 
    , "scope": "api_offresdemploiv2 o2dsoffre"
 }
 
