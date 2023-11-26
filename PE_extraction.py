@@ -140,20 +140,18 @@ for departement in [f"{i:02d}" for i in range(1,96)]:
         for type_contrat in ["CDI", "CDD"]:
             maj_param_appel("typeContrat", type_contrat)
 
-            #récupération des annonces Pôle emploi (1) ainsi que des fournisseurs autres (2)
+            #récupération des annonces Pôle emploi (1) ainsi que des fournisseurs autres (2) et on réinitialise le range à "0-149"
             for origine_offre in [1,2]:
                 seq_appel = 1
                 maj_param_appel("origineOffre", origine_offre)
                 maj_param_appel("range", seq_appel)
-
-                print("len(dataPE) 0 ",len(dataPE))
-                
+                #récupération des offres 
                 r_req = appel_API_offres(access_token)
                 if gestion_rc_offres(r_req, seq_appel, params):
                     for offre in r_req.json()["resultats"]:
                         dataPE.append(offre)
 
-                # -- on boucle si on n'a pas récupéré toutes les réponses lors du 1er appel  -- limitation technique fixée à 19 séquence d'appel par l'API
+                # -- on boucle si on n'a pas récupéré toutes les réponses lors du 1er appel  -- limitation technique fixée 3000 enreg soit à 19 séquences d'appel par l'API
                 while r_req.status_code == 206 and seq_appel < 20:
                     seq_appel += 1 
                     maj_param_appel("range", seq_appel)
