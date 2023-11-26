@@ -22,6 +22,6 @@ jobs:
         pip3 install pandas==1.5.3 requests pymongo
     - name: Exec python PE
       env:
-         API_PE_KEY: ${{ secrets.API_PE_KEY }}
+         api_key: ${{ secrets.API_PE_KEY }}
       run: |
-        python3 PE.py
+        python3 PE_extraction.py
