@@ -10,42 +10,48 @@ import time
 # Enregistrez le temps de début
 debut = time.time()
 
-ID_CLIENT= "PAR_datascientest_ecb3199f02af61edf17ee4429b67e79583f6f1d191aebfe00193fa013db7c694"
-KEY= "4b7d5baaa1c96b56425ddc2ae0bb0c325306465543fc3cdfa967d40a9c9164f7"
+#############################################################
+# Appel de l'API de génération du Token
+#############################################################
+
+ID_CLIENT= "PAR_datascientest_9c4305730c9067f9fe8e0405213db22bb178ca83c2b00b893b273ba1e8077b84"
+KEY= "9979a819e45b5c3711e2d84537abedd09685773feb2193731ba13a5a4159a236"
 
 #récupération de la clé github ?
 API_KEY = os.environ.get('API_PE_KEY')
 print("***********", API_KEY, "*****************")
-
-#############################################################
-# Appel de l'API de génération du Token
-#############################################################
 
 # Paramètre du point d"accès (URL, entête et token)
 url_token = "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=%2Fpartenaire"
 headers_token = { "Content-Type": "application/x-www-form-urlencoded"}
 data_token = {
     "grant_type": "client_credentials"
-   , "client_id": ID_CLIENT
-   , "client_secret": KEY
+   , "client_id": "PAR_datascientest_9c4305730c9067f9fe8e0405213db22bb178ca83c2b00b893b273ba1e8077b84"
+   , "client_secret": "9979a819e45b5c3711e2d84537abedd09685773feb2193731ba13a5a4159a236"
    , "scope": "api_offresdemploiv2 o2dsoffre"
 }
-#récupération et gestion de la réponse 
-r_token = requests.post(url_token, headers=headers_token, data=data_token)
-if r_token.status_code == 200 :
-    print("Récupération de la clé d'accès Pôle Emploi : OK")
-    access_token_bearer = r_token.json()["access_token"]
-else:
-    sys.exit(f"Erreur lors de l'appel à l'API de génération du token de connection, code retour {r_token.status_code}, erreur : {r_token.json().get('error')}")
+
+def appel_API_token():
+    r_token = requests.post(url_token, headers=headers_token, data=data_token)
+    return r_token
+
+def gestion_rc_token(reponse, params):
+    #récupération et gestion de la réponse 
+    if reponse.status_code == 200 :
+        print("Récupération de la clé d'accès Pôle Emploi : OK")
+        access_token_bearer = reponse.json()["access_token"]
+        return access_token_bearer
+    else:
+        print(f"paramètres d'appel: {params} ") 
+        sys.exit(f"Erreur lors de l'appel à l'API de génération du token de connection, code retour {reponse.status_code}, erreur : {reponse.json().get('error')}")
 
 #############################################################
 # Appel de l'API de récupération des jobs Pôle Emploi
 #############################################################
+seq_appel = 1
 
-# Paramètre du point d"accès (URL, autorisation et paramètre)
-seq_appel = 0
+# Paramètre du point d"accès (URL et paramètres ; l'autorisation va être construite suite à un premier appel à l'API de génération du token)
 url_req = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search?"
-authorization = {"Authorization": f"Bearer {access_token_bearer}"}
 params = {
     "range" : "0-149",
     "qualification": 0,  # Niveau de qualification demandé
@@ -55,23 +61,27 @@ params = {
     "departement":67
     #"motsCles": "informatique",  # Recherche par mot clé
     #"commune": "67482",  # Exemple de codes INSEE de communes
-
     #"distance" : 10 # rayon en km; 0 pour spécifier uniquement les offres de la ville
 }
 
-
-#Fonctions du programme
-def maj_param_appel():
-    param_range = params["range"].split("-")
-    param_range = [int(i) + 150 for i in param_range]
-    params["range"] = str(param_range[0])+"-"+ str(param_range[1])
-    
-
-def appel_API():
-    r_req = requests.get(url_req, params=params, headers=authorization)
+def appel_API_offres(access_token):
+    authorisation = {"Authorization": f"Bearer {access_token}"}
+    r_req = requests.get(url_req, params=params, headers=authorisation)
     return r_req
 
-def gestion_rc(reponse, seq_appel, params):
+def maj_param_appel(variable, valeur):
+    #mise à jour spécique du range qui commence par un paramétrage "0-149" et qui augmente selon à pas de 150. 
+    #le pas est paramétré selon le numéro de séquence d'appel qui commence à 1 et qui sera contenu dans la variable "valeur"
+    if variable == "range":
+        range_1 = "0-149"
+        param_range = [int(i) + 150 * (valeur - 1) for i in range_1.split("-")]
+        valeur = str(param_range[0])+"-"+ str(param_range[1])
+    
+    #Dans tous les cas, on va mettre à jour le paramétrage avec la valeur d'entrée ou calculée dans cette fonction
+    params.update({variable: valeur})
+    
+
+def gestion_rc_offres(reponse, seq_appel, params):
     #gestion des codes retour
     if reponse.status_code == 200 :
         print("Récupération de la liste des jobs : OK")
@@ -92,7 +102,8 @@ def gestion_rc(reponse, seq_appel, params):
         return False
     else:
         print(f"paramètre en d'appel : {params}")
-        print(f"Séquence d'appel n°{seq_appel}")    
+        print(f"Séquence d'appel n°{seq_appel}") 
+        print(f"reponse {reponse}")    
         sys.exit(f"Erreur lors de l'appel à l'API de récupération des jobs, code retour {reponse.status_code} - {reponse.json()['message']}")
     
 
@@ -108,34 +119,52 @@ def print_csv(type_écriture:str):
 #----------------------------------
 
 dataPE = []
-#récupération des réponses des annonces Pôle emploi ainsi que des fournisseurs autres
-for qualification in [0,9]:
-    params.update({"qualification": qualification})
-    for type_contrat in ["CDI", "CDD"]:
-        params.update({"typeContrat": type_contrat})
-        for departement in [f"{i:02d}" for i in range(1,96)]:
-            params.update({"departement": departement})
+access_token = ""
+#cinématique : étant donné que l'API nous limite à 3000 emplois par appel, nous allons démultiplier les appels en jouant sur les paramètres d'appel
+#afin de récolte un panel de job le plus large possible.
+
+#récupération des annonces pour chacun des départements français de métropole
+for departement in [f"{i:02d}" for i in range(1,96)]:
+    maj_param_appel("departement", departement)
+
+    #(ré)initialisation du token d'accès tous les 10 départements afin de ne pas se faire jeter par l'API.
+    if departement in [f"{i:02d}" for i in range(1,96,10)]:
+        rep = appel_API_token()
+        access_token = gestion_rc_token(rep, params)
+
+    #récupération des annonces pour en fonction de la qualification du poste : non cadre (0) ou cadre (9)
+    for qualification in [0,9]:
+        maj_param_appel("qualification", qualification)
+
+        #récupération des annonces pour en fonction du type de contrat
+        for type_contrat in ["CDI", "CDD"]:
+            maj_param_appel("typeContrat", type_contrat)
+
+            #récupération des annonces Pôle emploi (1) ainsi que des fournisseurs autres (2)
             for origine_offre in [1,2]:
-                params.update({"range" : "0-149", "origineOffre": origine_offre})
+                seq_appel = 1
+                maj_param_appel("origineOffre", origine_offre)
+                maj_param_appel("range", seq_appel)
+
                 print("len(dataPE) 0 ",len(dataPE))
-                print(params)
-                seq_appel = 1 
-                r_req = appel_API()
-                if gestion_rc(r_req, seq_appel, params):
+                
+                r_req = appel_API_offres(access_token)
+                if gestion_rc_offres(r_req, seq_appel, params):
                     for offre in r_req.json()["resultats"]:
                         dataPE.append(offre)
+
                 # -- on boucle si on n'a pas récupéré toutes les réponses lors du 1er appel  -- limitation technique fixée à 19 séquence d'appel par l'API
                 while r_req.status_code == 206 and seq_appel < 20:
                     seq_appel += 1 
-                    maj_param_appel()
-                    r_req = appel_API()
-                    if gestion_rc(r_req, seq_appel, params):
+                    maj_param_appel("range", seq_appel)
+                    r_req = appel_API_offres(access_token)
+                    if gestion_rc_offres(r_req, seq_appel, params):
                         for offre in r_req.json()["resultats"]:
                             dataPE.append(offre)
-
+                    
 #écriture d'un fichier externe pour visualisation du json de réponse
 print("len(dataPE) 5 ",len(dataPE))
 print_csv("w")
 
 
-print(f"temps d'exécution {round(time.time()-debut ,2)}")
+print(f"temps d'exécution {round((time.time()-debut)/60 ,2)} minutes")
