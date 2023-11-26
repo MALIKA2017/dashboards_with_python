@@ -7,6 +7,7 @@ from pymongo import MongoClient
 import pandas as pd
 import numpy as np
 import json
+import re
 #from PE_extraction import dataPE
 import time
 
@@ -43,10 +44,9 @@ for job in dataPE_list:
     #competences : mise à plat Cf ci-dessous
     "dateActualisation": job.get("dateActualisation", ""),
     "dateCreation": job.get("dateCreation", ""),
-    "deplacementCode": job.get("deplacementCode", 1),   #intialisation à 1 : jamais de déplacement
+    "deplacementCode": job.get("deplacementCode", 1),           #intialisation à 1 = jamais de déplacement
     "deplacementLibelle": job.get("deplacementLibelle", ""),
-    "description": job.get("description", ""),
-    
+    "description": job.get("description", ""), 
     "dureeTravailLibelle": job.get("dureeTravailLibelle", ""),
     "dureeTravailLibelleConverti": job.get("dureeTravailLibelleConverti", ""),
     "entreprise_nom": job.get("entreprise").get("nom", ""),
@@ -56,7 +56,7 @@ for job in dataPE_list:
     "entreprise_adaptee": job.get("entreprise").get("entrepriseAdaptee", ""),
     "experienceExige": job.get("experienceExige", ""),
     "experienceLibelle": job.get("experienceLibelle", ""),
-    #"formations": job.get("formations", ""),       faible taux de complétion
+    #"formations": job.get("formations", ""),                   #faible taux de complétion !
     "id": job.get("id", ""),
     "intitule": job.get("intitule", ""),
     "langues_nb" : len(job.get("langues", "")),
@@ -136,49 +136,45 @@ df = df.replace(np.nan, "")
 # Suppression des doublons
 df = df.drop_duplicates()
 #print(df.duplicated().sum())
-
+print(f"temps d'exécution {round((time.time()-debut)/60 ,2)} minutes")
 #remplissage "accessibleTH" par son mode (false)
 df["accessibleTH"] = df["accessibleTH"].replace("", df["accessibleTH"].mode()[0])
-
+print(f"temps d'exécution {round((time.time()-debut)/60 ,2)} minutes")
 #extraction de la durée horaire du libellé et transformation au format numérique 38H30 ==> 38.5
 df["dureeTravailLibelle"] = df["dureeTravailLibelle"].apply(lambda x : x[:2]+"."+ (str(round(int(x.replace(" ", "")[3:5])/60*100 ,2)) if x.replace(" ", "")[3:4].isnumeric() else "00"))
-
+print(f"temps d'exécution {round((time.time()-debut)/60 ,2)} minutes")
 #extraction de la durée d'expérience souhaitée en années en fonction du formatage présent
+for x, ligne in enumerate(df["experienceLibelle"]):
+    #si la ligne contient " an"/" ans" et qu'il existe un nombre dans le libellé
+    if  (" an" in ligne or  " ans" in ligne)  and re.search(r"\d+", ligne):
+        df.loc[x, "experienceLibelle"] = re.search(r"\d+", ligne).group()
+    #si la ligne contient "mois" et qu'il existe un nombre dans le libellé
+    elif " mois" in ligne and re.search(r"\d+", ligne):
+        df.loc[x, "experienceLibelle"]  = round(int(re.search(r"\d+", ligne).group())/12, 2)
+    #Sinon, si le libellé est simplement formaté avec les 2 mots suivants, on fixera arbitrairement l'expérience requise à 3ans.
+    elif "Expérience souhaitée" in ligne or "Expérience exigée" in ligne :
+        df.loc[x, "experienceLibelle"]  = 3
+    #Sinon, on sera dans le cas "Débutant accepté"
+    else:
+        df.loc[x, "experienceLibelle"]  = 0
+print(f"temps d'exécution {round((time.time()-debut)/60 ,2)} minutes")       
+#extraction du numéro de département et de la ville de la zone lieuTravail_libellé
+#for ligne in df["lieuTravail_libelle"]
+df["lieuTravail_libelle_num_dep"] = df["lieuTravail_libelle"].str.split("-", expand=True)[0]
+df["lieuTravail_libelle_nom_ville"] = df["lieuTravail_libelle"].str.split("-", expand=True)[1]
+print(f"temps d'exécution {round((time.time()-debut)/60 ,2)} minutes")
+#extraction du salaire minimum et maximum
 
-"""for x, libelle in enumerate(df["experienceLibelle"]):
-    annee_trouvee = False
-    #recherche du nombre d'année dans le libellé et on s'arrête à la première occurence (les autres ne sont que complémentaires)
-    for y, part in enumerate(libelle.split()):
-        if part[:2].lower() == "an":
-            df.loc[x,"experienceLibelle"] = libelle.split()[y-1] 
-            annee_trouvee = True
-            break
-        elif part[:4].lower() == "mois":
-            df.loc[x,"experienceLibelle"] = round(int(libelle.split()[y-1])/12 ,2)  if libelle.split()[y-1].isdigit() else "****"
-            annee_trouvee = True
-            break
+#df[["salaire_libelle_min", "salaire_libelle_max"]] = df["salaire_libelle"].str.split(" ", expand=True)
 
-    #initialisation de rubrique dans le cas générique où on ne trouverait pas d'année dans le libellé
-    if not annee_trouvee:
-        if libelle.split()[0] == "Débutant" :
-            df.loc[x,"experienceLibelle"] = 0
-        elif libelle.split()[0] == "Expérience":
-            df.loc[x,"experienceLibelle"]= 3
-        else:
-            df.loc[x,"experienceLibelle"] = 0
+print("1--------------------------------------------------------")
+print(df["experienceLibelle"].head(30))
+print("2--------------------------------------------------------")
+print(df["lieuTravail_libelle_num_dep"].head(30))
+print("3--------------------------------------------------------")
+print(df["lieuTravail_libelle_nom_ville"].head(30))
 
-    #if libelle.split()[x-1].isdigit() else 0
-        
-"""
-
-
-df["experienceLibelle"] = df["experienceLibelle"].apply(lambda x : str(round(int(x.split(" ")[0])/12 ,2)) + " ans" if x.split(" ")[1] == "mois" else x)
-df["experienceLibelle"] = df["experienceLibelle"].apply(lambda x : (x.split(" ")[0] + " ans" if (x.split(" ")[1] == "an" or x.split(" ")[1] =="ans") else x))
-df["experienceLibelle"] = df["experienceLibelle"].apply(lambda x : "0 ans" if x.split(" ")[0] == "Débutant" else x)
-df["experienceLibelle"] = df["experienceLibelle"].apply(lambda x : "0 ans" if x.split(" ")[0] == "Expérience" else x)
-
-print(df["experienceLibelle"].head(100))
-df.to_csv("df.csv", index=False)
+#df.to_csv("df.csv", index=False)
 """
 from statistics import median,mean
 import numpy as np
@@ -235,4 +231,4 @@ pprint(df2)
 
 
 
-print(f"temps d'exécution {round(time.time()-debut ,2)}")
+print(f"temps d'exécution {round((time.time()-debut)/60 ,2)} minutes")
