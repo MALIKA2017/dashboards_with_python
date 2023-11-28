@@ -50,7 +50,7 @@ def gestion_rc_token(reponse, params):
 seq_appel = 1
 
 # Paramètre du point d"accès (URL et paramètres ; l'autorisation va être construite suite à un premier appel à l'API de génération du token)
-url_req = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search?"
+url_offre = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search?"
 params = {
     "range" : "0-149",
     "qualification": 0,  # Niveau de qualification demandé
@@ -65,7 +65,7 @@ params = {
 
 def appel_API_offres(access_token):
     authorisation = {"Authorization": f"Bearer {access_token}"}
-    r_req = requests.get(url_req, params=params, headers=authorisation)
+    r_req = requests.get(url_offre, params=params, headers=authorisation)
     return r_req
 
 def maj_param_appel(variable, valeur):
@@ -113,6 +113,15 @@ def print_csv(type_écriture:str):
     with open("r_req.json", type_écriture) as fichier:
         fichier.write(r_req.text)
 
+###############################################################################
+# Appel de l'API de récupération des code Activité de Pôle Emploi (code Naf)  #
+###############################################################################
+url_naf ="https://api.pole-emploi.io/partenaire/stats-informations-territoire/v1/referentiel/activites/{code_type_activite}"
+
+def appel_API_naf(access_token,code_type_activite):
+    authorisation = {"Authorization": f"Bearer {access_token}"}
+    r_req = requests.get(f"{url_naf}{}", params=params, headers=authorisation)
+    return r_req
 #----------------------------------
 #traitement principal
 #----------------------------------
