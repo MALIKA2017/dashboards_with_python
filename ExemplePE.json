@@ -1,0 +1,174 @@
+[
+	{
+        "id": "165CRMZ",
+        "intitule": "Vendeur / Vendeuse en accessoires automobile",
+        "description": "En synergie avec ton Responsable Magasin et tes co\u00e9quipiers, tu es plus que quiconque, au c\u0153ur du magasin et tu guides les clients dans leurs choix. Voil\u00e0 pourquoi c'est \u00e0 toi qui revient la vente de produits et services, prestations atelier, l'animation des rayons et la mise en place des produits.\n\nDipl\u00f4m\u00e9 ou tr\u00e8s int\u00e9ress\u00e9 par le commerce et la relation clients, nous saurons t'accompagner gr\u00e2ce \u00e0 un parcours d'int\u00e9gration individualis\u00e9 et \u00e0 un suivi personnalis\u00e9.\n\nVOTRE PACKAGE :\n- CDI 35h hebdo avec possibilit\u00e9 d'heures suppl\u00e9mentaires.\n- R\u00e9mun\u00e9ration : A partir de 1800\u20ac brut mensuel, \u00e0 n\u00e9gocier suivant profil.\n- Prime mensuelle individuelle allant jusqu'\u00e0 550\u20ac par mois.\n- Bonus : Prime de 300\u20ac apr\u00e8s 1 an d'anciennet\u00e9, 400\u20ac apr\u00e8s 2 ans et 500\u20ac apr\u00e8s 3 ans.\n- Titres restaurants pris en charge \u00e0 50% par l'entreprise.\n- Un comit\u00e9 sociale et \u00e9conomique dynamique.\n- Mutuelle d'entreprise comp\u00e9titive.\n- Une \u00e9pargne salariale attractive et un accord d'int\u00e9ressement",
+        "dateCreation": "2023-11-21T10:01:58.000Z",
+        "dateActualisation": "2023-11-21T10:08:02.000Z",
+        "lieuTravail": {
+            "libelle": "01 - SEGNY",
+            "latitude": 46.295585,
+            "longitude": 6.0724,
+            "codePostal": "01170",
+            "commune": "01399"
+        },
+        "romeCode": "D1212",
+        "romeLibelle": "Vente en d\u00e9coration et \u00e9quipement du foyer",
+        "appellationlibelle": "Vendeur / Vendeuse en accessoires automobile",
+        "entreprise": {
+            "nom": "FEU VERT",
+            "entrepriseAdaptee": false
+        },
+        "typeContrat": "CDI",
+        "typeContratLibelle": "Contrat \u00e0 dur\u00e9e ind\u00e9termin\u00e9e",
+        "natureContrat": "Contrat travail",
+        "experienceExige": "D",
+        "experienceLibelle": "D\u00e9butant accept\u00e9",
+        "formations": [
+            {
+                "codeFormation": "34554",
+                "domaineLibelle": "commerce",
+                "niveauLibelle": "Bac ou \u00e9quivalent",
+                "exigence": "E"
+            }
+        ],
+        "permis": [
+            {
+                "libelle": "B - V\u00e9hicule l\u00e9ger",
+                "exigence": "E"
+            }
+        ],
+        "competences": [
+            {
+                "code": "100016",
+                "libelle": "Gestes et postures de manutention",
+                "exigence": "S"
+            },
+            {
+                "code": "102405",
+                "libelle": "Techniques de mise en rayon",
+                "exigence": "S"
+            },
+            {
+                "code": "117468",
+                "libelle": "R\u00e9aliser la mise en rayon",
+                "exigence": "S"
+            },
+            {
+                "code": "300374",
+                "libelle": "Pr\u00e9senter et valoriser un produit ou un service",
+                "exigence": "S"
+            }
+        ],
+        "salaire": {
+            "libelle": "Mensuel de 1850,00 Euros sur 12 mois",
+            "complement1": "Primes"
+        },
+        "dureeTravailLibelle": "35H Travail en journ\u00e9e",
+        "dureeTravailLibelleConverti": "Temps plein",
+        "alternance": false,
+        "contact": {
+            "nom": "P\u00f4le Emploi THOIRY",
+            "coordonnees1": "348 AVENUE DU MONT BLANC",
+            "coordonnees2": "01710 THOIRY",
+            "coordonnees3": "Pour postuler, utiliser le lien suivant : https://candidat.pole-emploi.fr/offres/recherche/detail/165CRMZ"
+        },
+        "agence": {
+            "courriel": "Pour postuler, utiliser le lien suivant : https://candidat.pole-emploi.fr/offres/recherche/detail/165CRMZ"
+        },
+        "nombrePostes": 1,
+        "accessibleTH": false,
+        "qualificationCode": "6",
+        "qualificationLibelle": "Employ\u00e9 qualifi\u00e9",
+        "codeNAF": "45.20A",
+        "secteurActivite": "45",
+        "secteurActiviteLibelle": "Entretien et r\u00e9paration de v\u00e9hicules automobiles l\u00e9gers",
+        "origineOffre": {
+            "origine": "1",
+            "urlOrigine": "https://candidat.pole-emploi.fr/offres/recherche/detail/165CRMZ"
+        },
+        "offresManqueCandidats": false
+    },
+    {
+        "id": "165CQPR",
+        "intitule": "Employ\u00e9(e) de Restauration Conc\u00e9d\u00e9e H/F - 01 (H/F)",
+        "description": "Aktisea est mandat\u00e9e par les Missions Handicap des entreprises pour recruter leurs futurs talents.\nDans ce cadre, nous accompagnons particuli\u00e8rement les candidats en situation de handicap dans leur processus de recrutement.\nNous recherchons pour le compte de notre client, sp\u00e9cialis\u00e9 dans la restauration collective, un(e) Employ\u00e9(e) de restauration conc\u00e9d\u00e9e H/F\n\nVous \u00eates \u00e0 la recherche d'un nouveau d\u00e9fi... Que diriez-vous de d\u00e9couvrir l'univers de la restauration conc\u00e9d\u00e9e !\nAu menu... Produits frais, valorisation du savoir et bonne humeur !\n\nMISSIONS : \nParticiper \u00e0 la mise en place du restaurant.\nEtre attentif(ve) aux demandes des convives.\nAssurer le nettoyage et la plonge.\nAider les \u00e9quipes en cuisine (\u00e9pluchage, d\u00e9coupe, dressage, etc).\nVeiller \u00e0 l'hygi\u00e8ne et \u00e0 la s\u00e9curit\u00e9.\n\nAMENAGEMENT / ENVIRONNEMENT DE TRAVAIL:\nType de site: Cuisine centrale.\nHoraires: en continu un week-end sur deux.\nNombre de repas: 800.\nEffectif de l'\u00e9quipe: 12 \u00e0 14 personnes.\n\nPROFIL RECHERCH\u00c9\nFormation et exp\u00e9rience :\nVous disposez id\u00e9alement d'une premi\u00e8re exp\u00e9rience en restauration et id\u00e9alement dans un \u00e9tablissement de restauration collective.\nVous avez une excellent relationnel et une grande polyvalence pour vous adapter \u00e0 diverses situations de travail.\nVotre autonomie et votre r\u00e9activit\u00e9 seront des atouts consid\u00e9rables pour la r\u00e9ussite de vos missions.\n\nDans le cadre de sa politique diversit\u00e9, le Groupe \u00e9tudie, \u00e0 comp\u00e9tences \u00e9gales, toutes candidatures dont celles de personnes en situation de handicap.\n\nA propos de  notre client : \nFort de ses 36 000 collaborateurs pr\u00e9sents dans 54 pays, acteur mondial ind\u00e9pendant du catering a\u00e9rien, notre client est le seul op\u00e9rateur \u00e0 intervenir sur l'ensemble des secteurs : catering a\u00e9rien, restauration collective, bases-vie, catering ferroviaire et retail.\n\nNous vous attendons !\nA comp\u00e9tences \u00e9gales, la priorit\u00e9 sera donn\u00e9e aux personnes b\u00e9n\u00e9ficiaires de l'obligation d'emploi (loi du 11 f\u00e9vrier 2005).",
+        "dateCreation": "2023-11-21T09:46:45.000Z",
+        "dateActualisation": "2023-11-21T10:04:49.000Z",
+        "lieuTravail": {
+            "libelle": "01 - CORBONOD",
+            "latitude": 45.965967,
+            "longitude": 5.810547,
+            "codePostal": "01420",
+            "commune": "01118"
+        },
+        "romeCode": "G1603",
+        "romeLibelle": "Personnel polyvalent en restauration",
+        "appellationlibelle": "Employ\u00e9 / Employ\u00e9e de restauration collective",
+        "entreprise": {
+            "nom": "AKTISEA",
+            "entrepriseAdaptee": true
+        },
+        "typeContrat": "CDI",
+        "typeContratLibelle": "Contrat \u00e0 dur\u00e9e ind\u00e9termin\u00e9e",
+        "natureContrat": "Contrat travail",
+        "experienceExige": "E",
+        "experienceLibelle": "2 ans",
+        "formations": [
+            {
+                "codeFormation": "42752",
+                "domaineLibelle": "cuisine",
+                "niveauLibelle": "CAP, BEP et \u00e9quivalents",
+                "exigence": "E"
+            }
+        ],
+        "competences": [
+            {
+                "code": "124966",
+                "libelle": "Types de sandwichs",
+                "exigence": "S"
+            },
+            {
+                "code": "104227",
+                "libelle": "Pr\u00e9parer, assembler des plats simples",
+                "exigence": "S"
+            },
+            {
+                "code": "300090",
+                "libelle": "Pr\u00e9parer des plats cuisin\u00e9s",
+                "exigence": "S"
+            },
+            {
+                "code": "300181",
+                "libelle": "Entretenir un \u00e9quipement, une machine, une installation",
+                "exigence": "S"
+            },
+            {
+                "code": "300282",
+                "libelle": "Entretenir, nettoyer un espace, un lieu, un local",
+                "exigence": "S"
+            }
+        ],
+        "salaire": {
+            "libelle": "Mensuel de 1748 Euros \u00e0 1800 Euros",
+            "commentaire": "+ 13\u00e8me mois + primes.",
+            "complement1": "Autre"
+        },
+        "dureeTravailLibelle": "35H Travail en journ\u00e9e",
+        "dureeTravailLibelleConverti": "Temps plein",
+        "alternance": false,
+        "contact": {},
+        "nombrePostes": 1,
+        "accessibleTH": true,
+        "qualificationCode": "5",
+        "qualificationLibelle": "Employ\u00e9 non qualifi\u00e9",
+        "codeNAF": "82.20Z",
+        "secteurActivite": "82",
+        "secteurActiviteLibelle": "Activit\u00e9s de centres d'appels",
+        "origineOffre": {
+            "origine": "1",
+            "urlOrigine": "https://candidat.pole-emploi.fr/offres/recherche/detail/165CQPR"
+        },
+        "offresManqueCandidats": false
+    }
+]
