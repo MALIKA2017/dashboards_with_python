@@ -28,6 +28,13 @@ with open("dataPE.json", "r") as file:
 #---------------------------------------------------
 
 def calcul_multiplicateur(index:int, periodicite:str, nb_mois=12):
+    """
+    Permet de Calculer le multiplicateur à appliquer afin de pouvoir transformer la valeur du salaire brute horaire ou mensuelle en un salaire annuel
+    :index: index de la ligne, permettant d'aller récupérer la durée horaire de travail par semaine dans la zone "dureeTravailLibelle" du DF
+    :periodicite: contient la périodicité du salaire (annuelle, mensuelle ou horaire)
+    :nb_mois: contient le nombre de mois sur lequel est calculé le salaire (12,13,14...)
+    :return: le multiplicateur de salaire
+    """
     if periodicite == "Horaire":
         # on est payé sur 52 semaines par an que l'on multiplie au nb d'heure travaillé par semaine 
         multiplicateur = float(df.loc[index,"dureeTravailLibelle"]) * 52/12 * float(nb_mois)
@@ -140,7 +147,6 @@ df.to_csv("df.csv", index=False)
 #transformation des Nan en " " 
 df = df.fillna(" ")
 
-
 # Suppression des doublons
 df = df.drop_duplicates()
 
@@ -171,35 +177,24 @@ for x, ligne in enumerate(df["experienceLibelle"]):
             else:
                 df.at[x, "experienceLibelle"] = 0
 
-
-
 #extraction du numéro de département et de la ville de la zone lieuTravail_libellé 
 #-- extraction et formatage du département sur 2c
 df["lieuTravail_num_dep"] = df["lieuTravail_libelle"].str.split(" - ", expand=True)[0]
 df["lieuTravail_num_dep"] = df["lieuTravail_num_dep"].str.zfill(2)
 #-- extraction du nom de la ville
 df["lieuTravail_nom_ville"] = df["lieuTravail_libelle"].str.split(" - ", expand=True)[1]
-
 df.fillna(" ", inplace=True)
 
-#extraction du salaire minimum et maximum 
+#extraction du salaire minimum et maximum : on 
 df["salaire_libelle"] = df["salaire_libelle"].str.replace("," , ".")
-
 for x, ligne in enumerate(df["salaire_libelle"]):
     #recherche des chiffres et des mots-clé ["Horaire", "Mensuel", "Annuel"] pour la périodicité du salaire et du mot "sur" qui nous indiquera le nb de mois [=> sur x mois]
     #la fonction recherche ci dessous renverra une liste en fonction des éléments qu'elle va trouver.
     #soit elle sera vide soit elle aura cette structure : [périodicité, salaire_min, salaire_max*, "sur"*, nb_de_mois*]         
     # --> les éléments * sont facultatifs ; "sur et "nb_de_mois" vont toujours de paire
-        #print(x, ligne)
-        #print(df.loc[x, ["id", "salaire_libelle"]])
-        if pd.isna(ligne):
-             print("na!!!")
-        if ligne == None:
-             print("None !!!")
         l_resultats = re.findall(r"Horaire\b|Mensuel\b|Annuel\b|\d+\.?\d*|\bsur\b", ligne)
-        #print(l_resultats)
         nb_resultats = len(l_resultats)
-        #print(nb_resultats)
+
         if nb_resultats == 2:
             #il n'y a qu'un salaire que l'on va calculer en annuel en fonction de la périodicité affichée et du temps de travail
             multiplicateur = calcul_multiplicateur(x, l_resultats[0])
@@ -220,13 +215,24 @@ for x, ligne in enumerate(df["salaire_libelle"]):
             multiplicateur = calcul_multiplicateur(x, l_resultats[0], l_resultats[4])
             df.loc[x,"salaire_min"] = str(round(float(l_resultats[1]) * multiplicateur))
             df.loc[x,"salaire_max"] = str(round(float(l_resultats[2]) * multiplicateur))
-   
- 
-#rajout des libellés des secteurs d'activité grâce au code Naf
-df= df[sorted(df.columns)]
+        else:
+            df.loc[x,"salaire_min"] = ""
+            df.loc[x,"salaire_max"] = ""
 
+#Rajout de la division du code 
+#-- on récupère la base de données NAF du réseau
+df_naf = pd.read_csv("NAF.csv", header=0 , sep=';')
+#on index la première colonne
+df_naf = df_naf.set_index("Division_NAF")
+
+#-- pour chaque code NAF du type xx.yy.*, nous allons rajouter une colonne avec le libellé correspondant à la division xx
+for x,ligne in enumerate(df["codeNAF"]):
+    if ligne != "" and ligne != " ":
+        df.loc[x,["codeNAF_libelle_division"]] = df_naf.loc[int(ligne[:2]), "Libelle_division_NAF"]
+
+df= df[sorted(df.columns)]
 #extraction en CSV
-#df.to_csv("df2.csv", index=False)
+df.to_csv("df2.csv", index=False)
 #extraction en json
 with open("DfPE.json", "w") as fichier:
     json.dump(df.to_dict(orient='records'), fichier, indent=4)
