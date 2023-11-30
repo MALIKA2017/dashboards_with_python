@@ -30,14 +30,14 @@ with open("dataPE.json", "r") as file:
 def calcul_multiplicateur(index:int, periodicite:str, nb_mois=12):
     """
     Permet de Calculer le multiplicateur à appliquer afin de pouvoir transformer la valeur du salaire brute horaire ou mensuelle en un salaire annuel
-    :index: index de la ligne, permettant d'aller récupérer la durée horaire de travail par semaine dans la zone "dureeTravailLibelle" du DF
+    :index: index de la ligne, permettant d'aller récupérer la durée horaire de travail par semaine dans la zone "dureeTravail" du DF
     :periodicite: contient la périodicité du salaire (annuelle, mensuelle ou horaire)
     :nb_mois: contient le nombre de mois sur lequel est calculé le salaire (12,13,14...)
     :return: le multiplicateur de salaire
     """
     if periodicite == "Horaire":
         # on est payé sur 52 semaines par an que l'on multiplie au nb d'heure travaillé par semaine 
-        multiplicateur = float(df.loc[index,"dureeTravailLibelle"]) * 52/12 * float(nb_mois)
+        multiplicateur = float(df.loc[index,"dureeTravail"]) * 52/12 * float(nb_mois)
     elif periodicite == "Mensuel":
         multiplicateur = float(nb_mois)
     else :
@@ -53,53 +53,53 @@ comp = []
 data_aplat = []
 for job in dataPE_list:
     data_doc = {
-    "accessibleTH": job.get("accessibleTH", " "),
-    "alternance": job.get("alternance", " "),
-    "appellationlibelle": job.get("appellationlibelle", " "),
-    "codeNAF": job.get("codeNAF", " "),
-    "competences_nb" : len(job.get("competences", " ")),
+    "accessibleTH": job.get("accessibleTH", ""),
+    "alternance": job.get("alternance", ""),
+    "appellationlibelle": job.get("appellationlibelle", ""),
+    "codeNAF": job.get("codeNAF", ""),
+    "competences_nb" : len(job.get("competences", "")),
     #competences : mise à plat Cf ci-dessous
-    "dateActualisation": job.get("dateActualisation", " "),
-    "dateCreation": job.get("dateCreation", " "),
+    "dateActualisation": job.get("dateActualisation", ""),
+    "dateCreation": job.get("dateCreation", ""),
     "deplacementCode": job.get("deplacementCode", 1),           #intialisation à 1 = jamais de déplacement
-    "deplacementLibelle": job.get("deplacementLibelle", " "),
-    "description": job.get("description", " "), 
-    "dureeTravailLibelle": job.get("dureeTravailLibelle", " "),
-    "dureeTravailLibelleConverti": job.get("dureeTravailLibelleConverti", " "),
-    "entreprise_nom": job.get("entreprise").get("nom", " "),
-    "entreprise_description": job.get("entreprise").get("description", " "),
-    "entreprise_logo": job.get("entreprise").get("logo", " "),
-    "entreprise_url": job.get("entreprise").get("url", " "),
-    "entreprise_adaptee": job.get("entreprise").get("entrepriseAdaptee", " "),
-    "experienceExige": job.get("experienceExige", " "),
-    "experienceLibelle": job.get("experienceLibelle", " "),
-    #"formations": job.get("formations", " "),                   #faible taux de complétion !
-    "id": job.get("id", " "),
-    "intitule": job.get("intitule", " "),
-    "langues_nb" : len(job.get("langues", " ")),
+    "deplacementLibelle": job.get("deplacementLibelle", ""),
+    "description": job.get("description", ""), 
+    "dureeTravailLibelle": job.get("dureeTravailLibelle", ""),
+    "dureeTravailLibelleConverti": job.get("dureeTravailLibelleConverti", ""),
+    "entreprise_nom": job.get("entreprise").get("nom", ""),
+    "entreprise_description": job.get("entreprise").get("description", ""),
+    "entreprise_logo": job.get("entreprise").get("logo", ""),
+    "entreprise_url": job.get("entreprise").get("url", ""),
+    "entreprise_adaptee": job.get("entreprise").get("entrepriseAdaptee", ""),
+    "experienceExige": job.get("experienceExige", ""),
+    "experienceLibelle": job.get("experienceLibelle", ""),
+    #"formations": job.get("formations", ""),                   #faible taux de complétion !
+    "id": job.get("id", ""),
+    "intitule": job.get("intitule", ""),
+    "langues_nb" : len(job.get("langues", "")),
     #langues : mise à plat cf ci-dessous
-    "lieuTravail_libelle": job.get("lieuTravail").get("libelle", " "),
-    "lieuTravail_latitude": job.get("lieuTravail").get("latitude", " "),
-    "lieuTravail_longitude": job.get("lieuTravail").get("longitude", " "),
-    "lieuTravail_codepostal": str(job.get("lieuTravail").get("codePostal", " ")).zfill(5),
-    "lieuTravail_commune": str(job.get("lieuTravail").get("commune", " ")).zfill(5),
-    "natureContrat": job.get("natureContrat", " "),
-    "origineOffre": job.get("origineOffre").get("origine", " "),
-    "outilsBureautiques": job.get("outilsBureautiques", " "),    
-    "permis_nb" : len(job.get("permis", " ")),
+    "lieuTravail_libelle": job.get("lieuTravail").get("libelle", ""),
+    "lieuTravail_latitude": job.get("lieuTravail").get("latitude", ""),
+    "lieuTravail_longitude": job.get("lieuTravail").get("longitude", ""),
+    "lieuTravail_codepostal": str(job.get("lieuTravail").get("codePostal", "")).zfill(5),
+    "lieuTravail_commune": str(job.get("lieuTravail").get("commune", "")).zfill(5),
+    "natureContrat": job.get("natureContrat", ""),
+    "origineOffre": job.get("origineOffre").get("origine", ""),
+    "outilsBureautiques": job.get("outilsBureautiques", ""),    
+    "permis_nb" : len(job.get("permis", "")),
     #permis : mise à plat Cf ci-dessous
-    "qualificationCode": job.get("qualificationCode", " "),
-    "qualificationLibelle": job.get("qualificationLibelle", " "),
-    "romeCode": job.get("romeCode", " "),
-    "romeLibelle": job.get("romeLibelle", " "),
-    "salaire_libelle": job.get("salaire").get("libelle", " "),
-    "salaire_commentaire": job.get("salaire").get("commentaire", " "),
-    "salaire_complement1": job.get("salaire").get("complement1", " "),
-    "salaire_complement2": job.get("salaire").get("complement2", " "),
-    "secteurActivite": job.get("secteurActivite", " "),
-    "secteurActiviteLibelle": job.get("secteurActiviteLibelle", " "),
-    "typeContrat": job.get("typeContrat", " "),
-    "typeContratLibelle": job.get("typeContratLibelle", " ")
+    "qualificationCode": job.get("qualificationCode", ""),
+    "qualificationLibelle": job.get("qualificationLibelle", ""),
+    "romeCode": job.get("romeCode", ""),
+    "romeLibelle": job.get("romeLibelle", ""),
+    "salaire_libelle": job.get("salaire").get("libelle", ""),
+    "salaire_commentaire": job.get("salaire").get("commentaire", ""),
+    "salaire_complement1": job.get("salaire").get("complement1", ""),
+    "salaire_complement2": job.get("salaire").get("complement2", ""),
+    "codeNAF_division": job.get("secteurActivite", ""),
+    "secteurActiviteLibelle": job.get("secteurActiviteLibelle", ""),
+    "typeContrat": job.get("typeContrat", ""),
+    "typeContratLibelle": job.get("typeContratLibelle", "")
     }
 
     if job.get("langues") != None :
@@ -119,9 +119,9 @@ for job in dataPE_list:
 
     if job.get("competences") != None:
         for i, comp in enumerate(job.get("competences")):
-                dict1= {f"competences{i+1:02d}_code" : f'{comp.get("code", " ")}'}
-                dict2 = {f"competences{i+1:02d}_libelle" : f'{comp.get("libelle", " ")}'}
-                dict3 = {f"competences{i+1:02d}_exigence" : f'{comp.get("exigence", " ")}'}
+                dict1= {f"competences{i+1:02d}_code" : f'{comp.get("code", "")}'}
+                dict2 = {f"competences{i+1:02d}_libelle" : f'{comp.get("libelle", "")}'}
+                dict3 = {f"competences{i+1:02d}_exigence" : f'{comp.get("exigence", "")}'}
                 data_doc.update(dict1)
                 data_doc.update(dict2)
                 data_doc.update(dict3)
@@ -144,17 +144,17 @@ df.to_csv("df.csv", index=False)
 # Transformation des données
 #---------------------------------------------------
 
-#transformation des Nan en " " 
-df = df.fillna(" ")
+#transformation des Nan en "" 
+df = df.fillna("")
 
 # Suppression des doublons
 df = df.drop_duplicates()
 
 #remplissage "accessibleTH" par son mode (false)
-df["accessibleTH"] = df["accessibleTH"].replace(" ", df["accessibleTH"].mode()[0])
+df["accessibleTH"] = df["accessibleTH"].replace("", df["accessibleTH"].mode()[0])
 
 #extraction de la durée horaire du libellé et transformation au format numérique 38H30 ==> 38.5
-df["dureeTravailLibelle"] = df["dureeTravailLibelle"].apply(lambda x : x[:2]+"."+ (str(round(int(x.replace(" ", "")[3:5])/60*100 )) if x.replace(" ", "")[3:4].isnumeric() else "00"))
+df["dureeTravail"] = df["dureeTravailLibelle"].apply(lambda x : x[:2]+"."+ (str(round(int(x.replace(" ", "")[3:5])/60*100 )) if x.replace(" ", "")[3:4].isnumeric() else "00"))
 
 #Reset des index car les transfo suivantes produisent des bizarreries...
 df.reset_index(drop=True, inplace=True)
@@ -181,7 +181,7 @@ df["lieuTravail_num_dep"] = df["lieuTravail_libelle"].str.split(" - ", expand=Tr
 df["lieuTravail_num_dep"] = df["lieuTravail_num_dep"].str.zfill(2)
 #-- extraction du nom de la ville
 df["lieuTravail_nom_ville"] = df["lieuTravail_libelle"].str.split(" - ", expand=True)[1]
-df.fillna(" ", inplace=True)
+df.fillna("", inplace=True)
 
 #extraction du salaire minimum et maximum : on 
 df["salaire_libelle"] = df["salaire_libelle"].str.replace("," , ".")
@@ -217,6 +217,15 @@ for x, ligne in enumerate(df["salaire_libelle"]):
             df.loc[x,"salaire_min"] = ""
             df.loc[x,"salaire_max"] = ""
 
+#calcul du salaire moyen
+df["salaire_min"] = pd.to_numeric(df["salaire_min"], errors='coerce')
+df["salaire_max"] = pd.to_numeric(df["salaire_max"], errors='coerce')
+
+# Ajoutez ensuite la colonne "salaire_moyen"
+df["salaire_moyen"] = round((df["salaire_min"] + df["salaire_max"]) / 2)
+#exclusion des salaires moyens supérieurs à 150K€ à l'année : dus à des erreurs de saisie.
+df["salaire_moyen"] = df["salaire_moyen"].apply(lambda x : "" if x > 150000 else x)
+
 #Rajout de la division du code 
 #-- on récupère la base de données NAF du réseau
 df_naf = pd.read_csv("NAF.csv", header=0 , sep=';')
@@ -224,13 +233,14 @@ df_naf = pd.read_csv("NAF.csv", header=0 , sep=';')
 df_naf = df_naf.set_index("Division_NAF")
 
 #-- pour chaque code NAF du type xx.yy.*, nous allons rajouter une colonne avec le libellé correspondant à la division xx
+df["codeNAF_division_libelle"] = ""
 for x,ligne in enumerate(df["codeNAF"]):
-    if ligne != "" and ligne != " ":
-        df.loc[x,["codeNAF_libelle_division"]] = str(df_naf.loc[int(ligne[:2]), "Libelle_division_NAF"])
+    if ligne != "" and ligne != "":
+        df.loc[x,["codeNAF_division_libelle"]] = str(df_naf.loc[int(ligne[:2]), "Libelle_division_NAF"])
 
 #df contient toutes les données de Pôle Emploi, on va aussi créer un DF spécialement pour faire un Dashboard sous Dash
 col_to_drop=   ["alternance",				   "lieuTravail_commune",	    "qualitesProfessionnelles1_description",   "typeContratLibelle",    
-                "dateActualisation",           "lieuTravail_latitude",     "qualitesProfessionnelles1_libelle",
+                "dateActualisation",           "lieuTravail_latitude",     "qualitesProfessionnelles1_libelle",         "dureeTravailLibelle",
                 "dateCreation",                "lieuTravail_libelle",      "qualitesProfessionnelles2_description",
                 "deplacementLibelle",          "lieuTravail_longitude",    "qualitesProfessionnelles2_libelle",
                 "description",                 "natureContrat",            "qualitesProfessionnelles3_description",
@@ -239,7 +249,7 @@ col_to_drop=   ["alternance",				   "lieuTravail_commune",	    "qualitesProfessi
                 "entreprise_logo",             "permis1_exigence",         "salaire_complement1",
                 "entreprise_url",              "permis1_libelle",          "salaire_complement2",
                 "experienceLibelle",           "permis2_exigence",         "salaire_libelle",
-                "id",                          "permis2_libelle",          "secteurActivite",
+                "id",                          "permis2_libelle",          "codeNAF",
                 "intitule",                    "permis_nb",                "secteurActiviteLibelle"]                
 
 #les Dataframes finaux :
@@ -252,6 +262,6 @@ df.to_csv("df2.csv", index=False)
 with open("DfPE.json", "w") as fichier:
     json.dump(df.to_dict(orient='records'), fichier, indent=4)
 
-print(f"\nTransformation - nombre d'enregistrements : {len(df)}")
+print(f"\nTransformation fin - nombre d'enregistrements : {len(df)}")
 print(f"Temps d'exécution {round((time.time()-debut)/60 ,2)} minutes")
 
