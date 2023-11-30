@@ -81,8 +81,8 @@ for job in dataPE_list:
     "lieuTravail_libelle": job.get("lieuTravail").get("libelle", " "),
     "lieuTravail_latitude": job.get("lieuTravail").get("latitude", " "),
     "lieuTravail_longitude": job.get("lieuTravail").get("longitude", " "),
-    "lieuTravail_codepostal": job.get("lieuTravail").get("codePostal", " "),
-    "lieuTravail_commune": job.get("lieuTravail").get("commune", " "),
+    "lieuTravail_codepostal": str(job.get("lieuTravail").get("codePostal", " ")).zfill(5),
+    "lieuTravail_commune": str(job.get("lieuTravail").get("commune", " ")).zfill(5),
     "natureContrat": job.get("natureContrat", " "),
     "origineOffre": job.get("origineOffre").get("origine", " "),
     "outilsBureautiques": job.get("outilsBureautiques", " "),    
@@ -161,21 +161,19 @@ df.reset_index(drop=True, inplace=True)
 
 #extraction de la durée d'expérience souhaitée en années en fonction du formatage présent
 for x, ligne in enumerate(df["experienceLibelle"]):
-            if x == 1206:
-                save = df.at[x, "experienceLibelle"]
-        #si la ligne contient "an" et qu'il existe un nombre dans le libellé
-            if  (" an" in ligne or " An" in ligne or " ans" in ligne  or " Ans" in ligne or " an(s)" in ligne or " An(s)" in ligne) and re.search(r"\d+", ligne):
-                df.at[x, "experienceLibelle"] = re.search(r"\d+", ligne).group()
-            #si la ligne contient "mois" et qu'il existe un nombre dans le libellé
-            elif " mois" in ligne and re.search(r"\d+", ligne):
-                #df.tail(5).to_csv("df_avant.csv", index=False)
-                df.at[x, "experienceLibelle"] = round(int(re.search(r"\d+", ligne).group())/12, 2)
-            #Sinon, si le libellé est simplement formaté avec les 2 mots suivants, on fixera arbitrairement l'expérience requise à 3ans.
-            elif "Expérience souhaitée" in ligne or "Expérience exigée" in ligne :
-                df.at[x, "experienceLibelle"] = 3
-            #Sinon, on sera dans le cas "Débutant accepté"
-            else:
-                df.at[x, "experienceLibelle"] = 0
+    #si la ligne contient "an" et qu'il existe un nombre dans le libellé
+    if  (" an" in ligne or " An" in ligne or " ans" in ligne  or " Ans" in ligne or " an(s)" in ligne or " An(s)" in ligne) and re.search(r"\d+", ligne):
+        df.at[x, "experience_nb_annees"] = re.search(r"\d+", ligne).group()
+    #si la ligne contient "mois" et qu'il existe un nombre dans le libellé
+    elif " mois" in ligne and re.search(r"\d+", ligne):
+        #df.tail(5).to_csv("df_avant.csv", index=False)
+        df.at[x, "experience_nb_annees"] = round(int(re.search(r"\d+", ligne).group())/12, 2)
+    #Sinon, si le libellé est simplement formaté avec les 2 mots suivants, on fixera arbitrairement l'expérience requise à 3ans.
+    elif "Expérience souhaitée" in ligne or "Expérience exigée" in ligne :
+        df.at[x, "experience_nb_annees"] = 3
+    #Sinon, on sera dans le cas "Débutant accepté"
+    else:
+        df.at[x, "experience_nb_annees"] = 0
 
 #extraction du numéro de département et de la ville de la zone lieuTravail_libellé 
 #-- extraction et formatage du département sur 2c
@@ -228,15 +226,32 @@ df_naf = df_naf.set_index("Division_NAF")
 #-- pour chaque code NAF du type xx.yy.*, nous allons rajouter une colonne avec le libellé correspondant à la division xx
 for x,ligne in enumerate(df["codeNAF"]):
     if ligne != "" and ligne != " ":
-        df.loc[x,["codeNAF_libelle_division"]] = df_naf.loc[int(ligne[:2]), "Libelle_division_NAF"]
+        df.loc[x,["codeNAF_libelle_division"]] = str(df_naf.loc[int(ligne[:2]), "Libelle_division_NAF"])
 
-df= df[sorted(df.columns)]
+#df contient toutes les données de Pôle Emploi, on va aussi créer un DF spécialement pour faire un Dashboard sous Dash
+col_to_drop=   ["alternance",				   "lieuTravail_commune",	    "qualitesProfessionnelles1_description",   "typeContratLibelle",    
+                "dateActualisation",           "lieuTravail_latitude",     "qualitesProfessionnelles1_libelle",
+                "dateCreation",                "lieuTravail_libelle",      "qualitesProfessionnelles2_description",
+                "deplacementLibelle",          "lieuTravail_longitude",    "qualitesProfessionnelles2_libelle",
+                "description",                 "natureContrat",            "qualitesProfessionnelles3_description",
+                "dureeTravailLibelleConverti", "origineOffre",             "qualitesProfessionnelles3_libelle",
+                "entreprise_description",      "outilsBureautiques",       "salaire_commentaire",
+                "entreprise_logo",             "permis1_exigence",         "salaire_complement1",
+                "entreprise_url",              "permis1_libelle",          "salaire_complement2",
+                "experienceLibelle",           "permis2_exigence",         "salaire_libelle",
+                "id",                          "permis2_libelle",          "secteurActivite",
+                "intitule",                    "permis_nb",                "secteurActiviteLibelle"]                
+
+#les Dataframes finaux :
+df= df[sorted(df.columns)]         
+df_dash = df.drop(col_to_drop, axis=1)
+
 #extraction en CSV
 df.to_csv("df2.csv", index=False)
 #extraction en json
 with open("DfPE.json", "w") as fichier:
     json.dump(df.to_dict(orient='records'), fichier, indent=4)
 
-print(len(df["experienceLibelle"]))
-print(f"temps d'exécution {round((time.time()-debut)/60 ,2)} minutes")
+print(f"\nTransformation - nombre d'enregistrements : {len(df)}")
+print(f"Temps d'exécution {round((time.time()-debut)/60 ,2)} minutes")
 
